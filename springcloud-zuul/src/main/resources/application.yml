@@ -1,0 +1,29 @@
+server:
+  port: 9527
+spring:
+  application:
+    name: springcloud-zuul
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7000/eureka/
+  instance:
+    instance-id: springcloud-zuul:${server.port}
+zuul:
+  routes: #为map类型<String,ZuulProperties.ZuulRoute>
+    #随意定义key 然后配置value（id;path;serviceId;url等属性）
+    producerdept:
+      path: /dept/** #指定路径中的名称可以转发到哪里
+      url: http://localhost:8000/ #转发到对应的微服务
+    consumer-feign:
+      path: /cs1/**
+      url: http://localhost:81/
+    consumer-ribbon:
+      path: /ra1/**
+      url: http://localhost:80/
+    dashboard:
+      path: /db/**
+      url: http://localhost:9000/
+  ignored-services: "*" #忽略默认的可以用微服务名称访问的方式
+  prefix: /yuan #设置公共前缀

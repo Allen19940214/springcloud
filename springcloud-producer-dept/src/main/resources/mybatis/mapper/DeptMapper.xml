@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yuan.dao.DeptDao">
+    <resultMap id="DeptBase" type="Dept">
+        <id column="id" property="id"></id>
+        <result column="dname" property="dname"/>
+        <result column="db_source" property="db_source"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="DeptBase">
+        select * from department;
+    </select>
+
+    <select id="findById" resultMap="DeptBase" parameterType="Integer">
+        select * from department where id=#{id};
+    </select>
+
+    <insert id="addDept" parameterType="Dept">
+        insert into department (dname,db_source)
+        values (#{dname},#{db_source});
+    </insert>
+
+    <update id="updateById" parameterType="Dept">
+        update department
+        <set>
+            <if test="dname!=null">dname=#{dname},</if>
+            <if test="db_source!=null">db_source=#{db_source},</if>
+        </set>
+            where id=#{id};
+    </update>
+
+    <delete id="deleteById" parameterType="Integer">
+        delete from department where id=#{id};
+    </delete>
+
+</mapper>
+

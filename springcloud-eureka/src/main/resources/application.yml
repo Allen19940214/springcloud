@@ -1,0 +1,16 @@
+server:
+  port: 7000
+#Eureka配置
+eureka:
+  instance:
+    hostname: localhost #服务端实例
+
+  client:
+    register-with-eureka: false #是否向服务端注册自己
+    fetch-registry: false #声明自己为注册中心服务端
+    #向客户端暴露注册的地址
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+spring:
+  application:
+    name: springcloud-eureka
