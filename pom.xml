@@ -16,6 +16,7 @@
         <module>springcloud-dashboard</module>
         <module>springcloud-zuul</module>
         <module>springcloud-config-server</module>
+        <module>springcloud-producer-user</module>
     </modules>
     <!--版本控制-->
     <properties>

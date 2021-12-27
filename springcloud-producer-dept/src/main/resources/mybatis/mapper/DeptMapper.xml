@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.yuan.dao.DeptDao">
+    <cache/>
     <resultMap id="DeptBase" type="Dept">
         <id column="id" property="id"></id>
         <result column="dname" property="dname"/>
