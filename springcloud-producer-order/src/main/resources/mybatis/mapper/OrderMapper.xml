@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yuan.dao.OrderDao">
+    <cache/>
+    <resultMap id="OrderBase" type="Order">
+        <id column="orderid" property="orderId"></id>
+        <result column="userid" property="userId"/>
+        <result column="num" property="num"/>
+        <result column="total" property="total"/>
+        <result column="total" property="total"/>
+        <result column="mqstatus" property="mqStatus"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="OrderBase">
+        select * from torder;
+    </select>
+
+    <select id="findById" resultMap="OrderBase" parameterType="String">
+        select * from torder where orderid=#{orderId};
+    </select>
+
+    <insert id="addOrder" parameterType="Order">
+        insert into torder (orderid,userid,num,total,mqstatus)
+        values (#{orderId},#{userId},#{num},#{total},#{mqStatus});
+    </insert>
+
+    <update id="updateById" parameterType="Order">
+        update torder
+        <set>
+            <if test="userId!=null">userid=#{userId},</if>
+            <if test="num!=null">num=#{num},</if>
+            <if test="total!=null">total=#{total},</if>
+            <if test="total!=null">mqstatus=#{mqStatus},</if>
+        </set>
+            where orderid=#{orderId};
+    </update>
+
+    <delete id="deleteById" parameterType="Integer">
+        delete from torder where orderid=#{orderId};
+    </delete>
+
+</mapper>
+

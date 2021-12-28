@@ -3,6 +3,13 @@ server:
 spring:
   application:
     name: springcloud-consumer-feign
+  #rabbitmq服务
+  rabbitmq:
+    username: Allen
+    password: lwxa1421
+    virtual-host: /allen
+    host: 114.115.180.17
+    port: 5672
 eureka:
   client:
     service-url:
