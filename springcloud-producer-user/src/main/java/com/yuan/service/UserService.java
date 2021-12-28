@@ -12,6 +12,6 @@ public interface UserService {
     int addUser(User user);
     int updateById(User user);
     int deleteById(@Param("uid")Integer id);
-    User login(Map map);
+    String login(Map map);
     User findByUserName(String username);
 }

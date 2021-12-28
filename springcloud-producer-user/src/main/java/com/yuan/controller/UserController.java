@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.yuan.pojo.User;
-import com.yuan.service.CheckLoginService;
 import com.yuan.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -13,15 +12,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController {
     @Autowired
     UserService userService;
-    @Autowired
-    CheckLoginService checkLoginService;
     @Autowired
     private DiscoveryClient discoveryClient;
     @Autowired
@@ -101,10 +100,17 @@ public class UserController {
         return modelAndView;
     }
     @RequestMapping ("/toUserPage")
-    public ModelAndView toUserPage() throws IOException {
-        checkLoginService.checkUser();
+    public ModelAndView toUserPage(){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("userShow");
         return modelAndView;
+    }
+    @RequestMapping ("/login")
+    public String login(@RequestParam("username")String username,@RequestParam("password")String password){
+        Map<String, Object> map = new HashMap<>();
+        map.put("username",username);
+        map.put("password",password);
+        String login = userService.login(map);
+        return login;
     }
 }
