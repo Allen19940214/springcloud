@@ -18,6 +18,7 @@
         <module>springcloud-config-server</module>
         <module>springcloud-producer-user</module>
         <module>springcloud-producer-order</module>
+        <module>springcloud-dispatchorder-service</module>
     </modules>
     <!--版本控制-->
     <properties>

@@ -42,5 +42,20 @@
         delete from torder where orderid=#{orderId};
     </delete>
 
+    <!--本地冗余消息表-->
+    <insert id="addOrderToBackup" parameterType="Order">
+        insert into torderbackup (orderid,userid,num,total,mqstatus)
+        values (#{orderId},#{userId},#{num},#{total},#{mqStatus});
+    </insert>
+    <update id="updateByIdBackup" parameterType="Order">
+        update torderbackup
+        <set>
+            <if test="userId!=null">userid=#{userId},</if>
+            <if test="num!=null">num=#{num},</if>
+            <if test="total!=null">total=#{total},</if>
+            <if test="total!=null">mqstatus=#{mqStatus},</if>
+        </set>
+        where orderid=#{orderId};
+    </update>
 </mapper>
 

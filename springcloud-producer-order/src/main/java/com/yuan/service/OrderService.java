@@ -11,4 +11,7 @@ public interface OrderService {
     int addOrder(Order order);
     int updateById(Order order);
     int deleteById(String id);
+
+    int addOrderToBackup(Order order);
+    int updateByIdBackup(Order order);
 }
