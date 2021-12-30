@@ -24,6 +24,8 @@ public class TTLDirectExchangeConfig {
         map.put("x-message-ttl",10000);
         map.put("x-dead-letter-exchange","deadDirectExchange");
         map.put("x-dead-letter-routing-key","dead");
+        //设置优先级，发消息时指定优先级，高的可先被消费，允许0-255 设置范围太大消耗机器性能 一般根据业务适当设置
+        map.put("x-max-priority",10);
         return new Queue("ttlSmsQueue",true,false,false,map);
     }
     @Bean

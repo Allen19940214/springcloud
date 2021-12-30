@@ -2,6 +2,7 @@ package com.yuan;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.Channel;
 import com.yuan.dao.OrderDao;
 import com.yuan.pojo.Order;
 import com.yuan.service.OrderService;
@@ -12,10 +13,14 @@ import org.junit.runner.RunWith;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.rabbit.connection.Connection;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -81,5 +86,29 @@ public class SpringbootOrderTest {
     public void testSendCallback() throws JsonProcessingException {
         Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1);
         orderService.addOrder(order);
+    }
+    //优先级测试
+    @Test
+    public void testMax() throws JsonProcessingException, InterruptedException {
+        MessagePostProcessor messagePostProcessor=new MessagePostProcessor() {
+            @Override
+            public Message postProcessMessage(Message message) throws AmqpException {
+                //设置优先级为5
+                message.getMessageProperties().setPriority(5);
+                return message;
+            }
+        };
+        MessagePostProcessor messagePostProcessor1=new MessagePostProcessor() {
+            @Override
+            public Message postProcessMessage(Message message) throws AmqpException {
+                //设置优先级为9
+                message.getMessageProperties().setPriority(9);
+                return message;
+            }
+        };
+        rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms","第一条消息优先级为5",messagePostProcessor);
+        TimeUnit.SECONDS.sleep(3);
+        rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms","第二条消息优先级为9",messagePostProcessor1);
+
     }
 }

@@ -19,6 +19,10 @@ spring:
     virtual-host: /allen
     host: 114.115.180.17
     port: 5672
+    #开启交换机确认模式 默认为none
+    publisher-confirm-type: correlated
+    #开启交换机回退机制 避免交换机路由到队列时出现问题
+    publisher-returns: true
 
   #druid配置
   datasource:
