@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+
 @Service
 @Slf4j
 public class OrderServiceImpl implements OrderService {
@@ -59,5 +61,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public int updateByIdBackup(Order order) {
         return orderDao.updateByIdBackup(order);
+    }
+
+    @Override
+    public List<Order> selectByCondition(Map map) {
+        return orderDao.selectByCondition(map);
     }
 }

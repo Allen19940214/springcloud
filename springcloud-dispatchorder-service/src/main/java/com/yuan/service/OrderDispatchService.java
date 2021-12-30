@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 public class OrderDispatchService {
     @RabbitListener(queues = "deadSmsQueue")
     public void getOrder(String order){
-        System.out.println(order);
+        log.info("监听到死信队列deadSmsQueue，消息为{}",order);
+    }
+    @RabbitListener(queues = "ttlSmsQueue")
+    public void getOrder1(String order){
+        log.info("监听到正常队列ttlSmsQueue，消息为{}",order);
     }
 }

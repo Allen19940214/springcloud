@@ -84,8 +84,10 @@ public class SpringbootOrderTest {
 
     @Test
     public void testSendCallback() throws JsonProcessingException {
-        Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1);
-        orderService.addOrder(order);
+        for (int i = 0; i <=20; i++) {
+            Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1);
+            orderService.addOrder(order);
+        }
     }
     //优先级测试
     @Test

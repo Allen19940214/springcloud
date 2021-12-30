@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
 //可靠生产实现：交换机确认接口（RabbitTemplate.ConfirmCallback）+消息回退接口(RabbitTemplate.ReturnCallback)
-public class OrederCallBack implements RabbitTemplate.ConfirmCallback,RabbitTemplate.ReturnCallback{
+public class OrderCallBack implements RabbitTemplate.ConfirmCallback,RabbitTemplate.ReturnCallback{
     @Autowired
     private RabbitTemplate rabbitTemplate;
     @Autowired
@@ -34,19 +37,39 @@ public class OrederCallBack implements RabbitTemplate.ConfirmCallback,RabbitTemp
             try {
                 Order order = orderService.findById(correlationData.getId());
                 order.setMqStatus(0);
-                orderService.addOrderToBackup(order);
+                Map map =new HashMap<>();
+                map.put("orderId", correlationData.getId());
+                //查看冗余表是否存过数据 有的话直接更新状态，没有则新增
+                List<Order> orders = orderService.selectByCondition(map);
+                if(orders.size()>0){
+                    orderService.updateByIdBackup(order);
+                }else {
+                    orderService.addOrderToBackup(order);
+                }
             } catch (Exception e) {
-                log.error("消息发送失败，并且添加冗余消息是出现异常:"+e.getMessage());
+                log.error("消息发送失败，并且添加冗余消息/更新冗余信息状态是出现异常:"+e.getMessage());
             }
             return;
         }
-        //成功，也需将消息添加到本地消息冗余表
-        log.info("发送的订单id为：{}，发送成功:{},成功原因为:{}",correlationData.getId(),ack,cause);
-        try {
-            Order order = orderService.findById(correlationData.getId());
-            orderService.addOrderToBackup(order);
-        } catch (Exception e) {
-            log.error("消息发送成功，但是添加冗余消息是出现异常:"+e.getMessage());
+        //成功，也需将消息添加到本地消息冗余表或者更新状态
+        if(ack){
+            log.info("发送的订单id为：{}，发送成功:{},失败原因为:{}",correlationData.getId(),ack,cause);
+            try {
+                Order order = orderService.findById(correlationData.getId());
+                order.setMqStatus(1);
+                Map map =new HashMap<>();
+                map.put("orderId", correlationData.getId());
+                //查看冗余表是否存过数据 有的话直接更新状态
+                List<Order> orders = orderService.selectByCondition(map);
+                if(orders.size()>0){
+                    orderService.updateByIdBackup(order);
+                }else {
+                    orderService.addOrderToBackup(order);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("消息发送成功，但是添加冗余消息是出现异常");
+            }
         }
     }
     /*
@@ -57,6 +80,7 @@ public class OrederCallBack implements RabbitTemplate.ConfirmCallback,RabbitTemp
      */
     @Override
     public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
+        //走到这里说明交换机路由到队列时肯定失败 可选择做一些操作 对退回的消息做标记
         log.error("消息{}，被交换机{}退回，退回原因为：{}，路由key：{}",
                 new String(message.getBody()),exchange,replyText,routingKey);
     }

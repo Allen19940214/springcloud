@@ -1,30 +1,31 @@
 package com.yuan.service.fegin;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuan.pojo.Order;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
+import java.util.Map;
 
-@FeignClient("springcloud-producer-order")
+
+@FeignClient(value = "springcloud-producer-order",fallbackFactory = OrderServiceFallback.class)
 public interface FeignClientOrderService {
-
     @RequestMapping("/addOrder")
     public String addOrder(@RequestBody Order order);
     @RequestMapping("/findAll")
-    public String findAll();
-    @RequestMapping("/findById")
-    public String findById(String id);
+    public String findAll() throws JsonProcessingException;
+    @RequestMapping("/findById/{id}")
+    public String findById(@PathVariable("id") String id);
     @RequestMapping("/updateById")
-    public String updateById(Order order);
-    @RequestMapping("/deleteById")
-    public String deleteById(String id);
+    public String updateById(@RequestBody Order order);
+    @RequestMapping("/deleteById/{id}")
+    public String deleteById(@PathVariable("id") String id);
     @RequestMapping("/addOrderToBackup")
-    public String addOrderToBackup(Order order);
+    public String addOrderToBackup(@RequestBody Order order);
     @RequestMapping("/updateByIdBackup")
-    public String updateByIdBackup(Order order);
+    public String updateByIdBackup(@RequestBody Order order);
+    @RequestMapping("/selectByCondition")//id
+    public String selectByCondition(@RequestBody Map map);
 }

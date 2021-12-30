@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuan.pojo.Order;
 import com.yuan.service.OrderService;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class OrderController {
@@ -32,29 +30,42 @@ public class OrderController {
         List<Order> allOrder = orderService.findAll();
         return objectMapper.writeValueAsString(allOrder);
     }
-    @RequestMapping("/findById")
-    public String findById(String id) throws JsonProcessingException {
+    @RequestMapping("/findById/{id}")
+    public String findById(@PathVariable("id") String id) throws JsonProcessingException {
         Order byId = orderService.findById(id);
         return objectMapper.writeValueAsString(byId);
     }
     @RequestMapping("/updateById")
-    public String updateById(Order order) {
+    public String updateById(@RequestBody Order order) {
         Integer i = orderService.updateById(order);
         return i.toString();
     }
-    @RequestMapping("/deleteById")
-    public String deleteById(String id) {
-        Integer i = orderService.deleteById(id);
-        return i.toString();
+    @RequestMapping("/deleteById/{id}")
+    public String deleteById(@PathVariable("id") String id) {
+        int i = orderService.deleteById(id);
+        if(i>0){
+            return "删除成功";
+        }
+        return "删除失败";
     }
     @RequestMapping("/addOrderToBackup")
-    public String addOrderToBackup(Order order) {
+    public String addOrderToBackup(@RequestBody Order order) {
         Integer i = orderService.addOrderToBackup(order);
         return i.toString();
     }
     @RequestMapping("/updateByIdBackup")
-    public String updateByIdBackup(Order order) {
+    public String updateByIdBackup(@RequestBody Order order) {
         Integer i = orderService.updateByIdBackup(order);
         return i.toString();
     }
+    @RequestMapping("/selectByCondition")//id
+    public String selectByCondition(@RequestBody Map map) throws JsonProcessingException {
+        if(map.size()>0){
+            System.out.println(map.keySet());
+        }
+        List<Order> orders = orderService.selectByCondition(map);
+        String s = objectMapper.writeValueAsString(orders);
+        return s;
+    }
+
 }

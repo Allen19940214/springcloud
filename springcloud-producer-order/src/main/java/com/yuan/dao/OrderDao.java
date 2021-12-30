@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 @Repository
@@ -19,4 +20,5 @@ public interface OrderDao {
     //冗余表语句
     int addOrderToBackup(Order order);
     int updateByIdBackup(Order order);
+    List<Order> selectByCondition(Map map);
 }
