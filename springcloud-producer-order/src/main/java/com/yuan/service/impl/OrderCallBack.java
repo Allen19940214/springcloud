@@ -53,7 +53,7 @@ public class OrderCallBack implements RabbitTemplate.ConfirmCallback,RabbitTempl
         }
         //成功，也需将消息添加到本地消息冗余表或者更新状态
         if(ack){
-            log.info("发送的订单id为：{}，发送成功:{},失败原因为:{}",correlationData.getId(),ack,cause);
+            log.info("发送的订单id为：{}，发送成功:{},失败原因为:{null}",correlationData.getId(),ack,cause);
             try {
                 Order order = orderService.findById(correlationData.getId());
                 order.setMqStatus(1);

@@ -24,6 +24,7 @@ spring:
     #开启交换机回退机制 避免交换机路由到队列时出现问题
     publisher-returns: true
 
+
   #druid配置
   datasource:
     driver-class-name: com.mysql.jdbc.Driver

@@ -57,7 +57,8 @@ public class SpringbootOrderTest {
         //rabbitmq路由模式+延时队列
         //模拟用户下单 成功后给短信 微信 邮件队列投送消息
         //下单成功投递消息
-        rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms","下单成功了");
+        String s = objectMapper.writeValueAsString("下单成功了");
+        rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms",s);
     }
     @Test
     public void testDirectExchangeTTL1() throws JsonProcessingException {

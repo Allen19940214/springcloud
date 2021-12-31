@@ -2,6 +2,7 @@ package com.yuan.service.task;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.Channel;
 import com.yuan.pojo.Order;
 import com.yuan.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class TimingTaskService {
     @Autowired
     private ObjectMapper objectMapper;
     //对本地消息冗余表中发送失败的消息 进行重新发送
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/30 * * * ?")
     public void sendFailOrder() throws JsonProcessingException {
         log.info("定时任务：发送冗余表中投递失败的消息（状态为0的）");
         Map map =new HashMap<>();
@@ -43,5 +44,6 @@ public class TimingTaskService {
             CorrelationData correlationData = new CorrelationData(order.getOrderId());
             rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms",objectMapper.writeValueAsString(order),correlationData);
         }
+        //遗留问题：一个服务要再多个地方使用ack如何解决，比如在这个定时任务中
     }
 }
