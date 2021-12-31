@@ -31,6 +31,10 @@ spring:
           #max-attempts: 3
           #重试间隔
           #initial-interval: 2000ms
+  #redis服务
+  redis:
+    host: localhost
+    port: 6379
 
   #druid配置
   datasource:

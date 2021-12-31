@@ -1,5 +1,8 @@
 package com.yuan.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuan.pojo.Order;
 import com.yuan.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +25,8 @@ public class OrderCallBack implements RabbitTemplate.ConfirmCallback,RabbitTempl
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    ObjectMapper objectMapper;
     @PostConstruct
     public void init(){
         //将自定义接口实现类注入
@@ -32,14 +37,17 @@ public class OrderCallBack implements RabbitTemplate.ConfirmCallback,RabbitTempl
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
         if(!ack){
-            log.error("发送的订单id为：{}，发送失败:{},失败原因为:{}",correlationData.getId(),ack,cause);
-            //失败进行其他补偿操作（比如对消息冗余表中未成功发送的消息定时重新发送，MqStatus属性：成功为1，失败则修改状态为0 ）
             try {
-                Order order = orderService.findById(correlationData.getId());
+                //获取订单
+                log.error("订单发送失败:{},失败原因为:{}",ack,cause);
+                byte[] body = correlationData.getReturnedMessage().getBody();
+                String sOrder = new String(body);
+                Order order = objectMapper.readValue(sOrder, new TypeReference<Order>() {});
+                log.info("发送的消息体为：{}",order);
                 order.setMqStatus(0);
                 Map map =new HashMap<>();
-                map.put("orderId", correlationData.getId());
-                //查看冗余表是否存过数据 有的话直接更新状态，没有则新增
+                map.put("orderId", order.getOrderId());
+                //查看冗余表是否存过数据 有的话直接更新状态
                 List<Order> orders = orderService.selectByCondition(map);
                 if(orders.size()>0){
                     orderService.updateByIdBackup(order);
@@ -47,18 +55,22 @@ public class OrderCallBack implements RabbitTemplate.ConfirmCallback,RabbitTempl
                     orderService.addOrderToBackup(order);
                 }
             } catch (Exception e) {
-                log.error("消息发送失败，并且添加冗余消息/更新冗余信息状态是出现异常:"+e.getMessage());
+                e.printStackTrace();
+                log.error("消息发送失败，并且添加冗余消息是出现异常");
             }
-            return;
         }
         //成功，也需将消息添加到本地消息冗余表或者更新状态
         if(ack){
-            log.info("发送的订单id为：{}，发送成功:{},失败原因为:{null}",correlationData.getId(),ack,cause);
             try {
-                Order order = orderService.findById(correlationData.getId());
+                //获取订单
+                log.info("订单发送成功:{},成功cause为:{}",ack,cause);
+                byte[] body = correlationData.getReturnedMessage().getBody();
+                String sOrder = new String(body);
+                Order order = objectMapper.readValue(sOrder, new TypeReference<Order>() {});
+                log.info("发送的消息体为：{}",order);
                 order.setMqStatus(1);
                 Map map =new HashMap<>();
-                map.put("orderId", correlationData.getId());
+                map.put("orderId", order.getOrderId());
                 //查看冗余表是否存过数据 有的话直接更新状态
                 List<Order> orders = orderService.selectByCondition(map);
                 if(orders.size()>0){

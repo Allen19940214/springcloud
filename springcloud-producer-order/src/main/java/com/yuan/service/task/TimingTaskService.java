@@ -6,6 +6,7 @@ import com.rabbitmq.client.Channel;
 import com.yuan.pojo.Order;
 import com.yuan.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,13 @@ public class TimingTaskService {
             return;
         }
         for (Order order : orders) {
+            CorrelationData correlationData = new CorrelationData();
+            String s = objectMapper.writeValueAsString(order);
+            byte[] bytesOrder = s.getBytes();
+            correlationData.setReturnedMessage(new Message(bytesOrder));
             log.info("查询到失败消息为{}：",order);
-            CorrelationData correlationData = new CorrelationData(order.getOrderId());
             rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms",objectMapper.writeValueAsString(order),correlationData);
         }
-        //遗留问题：一个服务要再多个地方使用ack如何解决，比如在这个定时任务中
+        //遗留问题：消费者多个地方使用ack如何解决，比如在这个定时任务中
     }
 }

@@ -12,6 +12,7 @@
         <result column="total" property="total"/>
         <result column="total" property="total"/>
         <result column="mqstatus" property="mqStatus"/>
+        <result column="goodname" property="goodName"/>
     </resultMap>
 
     <select id="findAll" resultMap="OrderBase">
@@ -23,8 +24,8 @@
     </select>
 
     <insert id="addOrder" parameterType="Order">
-        insert into torder (orderid,userid,num,total,mqstatus)
-        values (#{orderId},#{userId},#{num},#{total},#{mqStatus});
+        insert into torder (orderid,userid,num,total,mqstatus,goodname)
+        values (#{orderId},#{userId},#{num},#{total},#{mqStatus},#{goodName});
     </insert>
 
     <update id="updateById" parameterType="Order">
@@ -34,6 +35,7 @@
             <if test="num!=null">num=#{num},</if>
             <if test="total!=null">total=#{total},</if>
             <if test="total!=null">mqstatus=#{mqStatus},</if>
+            <if test="goodName!=null">goodname=#{goodName},</if>
         </set>
             where orderid=#{orderId};
     </update>
@@ -44,8 +46,8 @@
 
     <!--本地冗余消息表-->
     <insert id="addOrderToBackup" parameterType="Order">
-        insert into torderbackup (orderid,userid,num,total,mqstatus)
-        values (#{orderId},#{userId},#{num},#{total},#{mqStatus});
+        insert into torderbackup (orderid,userid,num,total,mqstatus,goodname)
+        values (#{orderId},#{userId},#{num},#{total},#{mqStatus},#{goodName});
     </insert>
     <update id="updateByIdBackup" parameterType="Order">
         update torderbackup
@@ -54,6 +56,7 @@
             <if test="num!=null">num=#{num},</if>
             <if test="total!=null">total=#{total},</if>
             <if test="mqStatus!=null">mqstatus=#{mqStatus},</if>
+            <if test="goodName!=null">goodname=#{goodName},</if>
         </set>
         where orderid=#{orderId};
     </update>

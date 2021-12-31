@@ -1,14 +1,18 @@
 package com.yuan.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
+import com.yuan.pojo.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -16,18 +20,30 @@ public class OrderDispatchService {
     private int count=1;
     @Autowired
     private DispatchService dispatchService;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @RabbitListener(queues = "deadSmsQueue")
-    public void getOrder(String order, Message message, Channel channel) throws IOException {
+    public void getOrder(Message message, Channel channel) throws IOException {
         try {
-            log.info("监听到死信队列deadSmsQueue，进行派单，消息为{}",order);
-            System.out.println(dispatchService.addPatchOrder());
-            System.out.println(1/0);
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+            //死信队列同样重复代码，如果依旧出现异常则在catch块进行人工干预（或者没必要再次尝试也可根据业务进行其他操作），
+            String orderMessageId = message.getMessageProperties().getMessageId();
+            //从redis取出唯一id
+            String redisOrderUUID= stringRedisTemplate.opsForValue().get("orderMessageId");
+            if(redisOrderUUID!=null&&!orderMessageId.equals(redisOrderUUID)){
+                //等于空说名没消费 进行业务
+                System.out.println(dispatchService.addPatchOrder());
+                //完毕将消息的id 保存到redis
+                stringRedisTemplate.opsForValue().set("orderMessageId",orderMessageId);
+                int i=1/0;
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+            }else {
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+            }
         } catch (Exception e) {
-            //如果再出现异常 则人工干预
-            log.info("短信邮件警报+人工干预");
-            //不管是否正常消费都最好再次确认 防止私信队列中的消息堆积（不确认在管理界面显示为Unacked状态）
+            log.error("请及时检查并进行人工补偿");
             channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,false);
         }
     }
@@ -38,13 +54,27 @@ public class OrderDispatchService {
     3、try catch +手动ack +死信队列
      */
     @RabbitListener(queues = "ttlSmsQueue")
-    public void getOrder1(String order,Message message, Channel channel) throws IOException {
+    public void getOrder1(Message message, Channel channel) throws IOException {
         try {
-            log.info("监听到正常队列ttlSmsQueue，准备派单，消息为{},count:{}",order,count++);
-            System.out.println(dispatchService.addPatchOrder());
-            System.out.println(1/0);
-            //业务执行完 调用basicAck方法进行确认  确认消费消息成功 tag参数为消息的标签 可看成消息的唯一id
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+            //幂等性问题解决，先拿到发送消息时设置的全局唯一id
+            String orderMessageId = message.getMessageProperties().getMessageId();
+            //从redis取出唯一id
+            String redisOrderUUID= stringRedisTemplate.opsForValue().get("orderMessageId");
+            //简单判空 会影响别的用户正常消费 必须精确判断
+            if(redisOrderUUID!=null&&!orderMessageId.equals(redisOrderUUID)){
+                //满足条件说明没消费 进行业务
+                System.out.println(dispatchService.addPatchOrder());
+                //完毕将消息的id 保存到redis
+                stringRedisTemplate.opsForValue().set("orderMessageId",orderMessageId);
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+            }else {
+                //否则是确认为同一条消息 说明已经保存过 并且已经被消费了 直接ack就不会重复执行上面的代码 避免了重复消费
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+            }
+            /*
+            业务执行完 调用basicAck方法进行确认  确认消费消息成功 tag参数为消息的标签 可看成消息的唯一id 从1开始 重启消费端会重置为1
+            如果要解决幂等性问题 不建议使用这个做判断，可以用message手动给消息设置（默认为空）唯一id并结合redis解决
+             */
         } catch (Exception e) {
         /*
         出现异常 basicNack requeue是否重发(false不重发，如果配置文件配置了开启重发并设置了重发次数)

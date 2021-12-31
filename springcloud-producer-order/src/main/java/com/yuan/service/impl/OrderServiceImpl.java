@@ -6,6 +6,7 @@ import com.yuan.dao.OrderDao;
 import com.yuan.pojo.Order;
 import com.yuan.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,10 @@ public class OrderServiceImpl implements OrderService {
     public int addOrder(Order order) throws JsonProcessingException {
         int i = orderDao.addOrder(order);
         if(i>0){
-            CorrelationData correlationData = new CorrelationData(order.getOrderId());
+            CorrelationData correlationData = new CorrelationData();
+            String s = objectMapper.writeValueAsString(order);
+            byte[] bytesOrder = s.getBytes();
+            correlationData.setReturnedMessage(new Message(bytesOrder));
             rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms",objectMapper.writeValueAsString(order),correlationData);
             return i;
         }

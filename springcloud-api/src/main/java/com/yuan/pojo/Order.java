@@ -15,6 +15,7 @@ public class Order implements Serializable {
     private Integer num;
     private Double total;
     private Integer mqStatus;
+    private String goodName;
 
     public Order(String orderId, Integer mqStatus) {
         this.orderId = orderId;

@@ -15,11 +15,16 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
@@ -33,10 +38,14 @@ public class SpringbootOrderTest {
     private ObjectMapper objectMapper;
     @Autowired
     OrderDao orderDao;
+    @Autowired
+    RedisTemplate redisTemplate;
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
     @Test
     public void testFanoutExchange() throws JsonProcessingException {
         //模拟用户下单
-        Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1);
+        Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1,"方便面");
         orderService.addOrder(order);
             //下单成功投递消息
         rabbitTemplate.convertAndSend("orderFanoutExchange","",objectMapper.writeValueAsString(order));
@@ -79,14 +88,14 @@ public class SpringbootOrderTest {
         //测试本地冗余表 插入and更新
         /*Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1);
         orderDao.addOrderToBackup(order);*/
-        Order order = new Order("cacd2607ec5", 2, 1, 10.0, 0);
+        Order order = new Order("cacd2607ec5", 2, 1, 10.0, 0,"方便面");
         orderDao.updateByIdBackup(order);
     }
 
     @Test
     public void testSendCallback() throws JsonProcessingException {
         for (int i = 0; i <=20; i++) {
-            Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1);
+            Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1,"方便面");
             orderService.addOrder(order);
         }
     }
@@ -113,5 +122,26 @@ public class SpringbootOrderTest {
         TimeUnit.SECONDS.sleep(3);
         rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms","第二条消息优先级为9",messagePostProcessor1);
 
+    }
+    @Test
+    public void testSendOrder() throws JsonProcessingException {
+        //给message唯一id解决幂等问题（发送到消费者，可以从在消费者用message取出）或者MessageBuilder
+        MessagePostProcessor messagePostProcessor = new MessagePostProcessor() {
+            @Override
+            public Message postProcessMessage(Message message) throws AmqpException {
+                message.getMessageProperties().setMessageId(UUID.randomUUID().toString());
+                return message;
+            }
+        };
+
+        CorrelationData correlationData = new CorrelationData();
+        //订单的唯一id
+        String uuid = UUIDUtil.getUUID();
+        Order order = new Order(uuid, 2, 1, 10.0, 1,"方便面");
+        //将订单转化为json 再转化为byte[]数组
+        String sorder = objectMapper.writeValueAsString(order);
+        byte[] bytesOrder  = sorder.getBytes();
+        correlationData.setReturnedMessage(new Message(bytesOrder));
+        rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms",objectMapper.writeValueAsString(order),messagePostProcessor,correlationData);
     }
 }
