@@ -23,5 +23,6 @@ public class SpringbootTestDispatchOrder {
     public void testRedis(){
         stringRedisTemplate.opsForValue().set("id", UUIDUtil.getUUID());
         Map map=new HashMap<>();
+        String s = new String();
     }
 }
