@@ -9,6 +9,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class SpringbootTestDispatchOrder {
@@ -19,5 +22,6 @@ public class SpringbootTestDispatchOrder {
     @Test
     public void testRedis(){
         stringRedisTemplate.opsForValue().set("id", UUIDUtil.getUUID());
+        Map map=new HashMap<>();
     }
 }
