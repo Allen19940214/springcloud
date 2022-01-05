@@ -1,0 +1,15 @@
+server:
+  port: 8005
+
+spring:
+  application:
+    name: springcloud-alibaba-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 114.115.180.17:8848
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
