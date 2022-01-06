@@ -1,6 +1,5 @@
 server:
   port: 3344
-
 spring:
   application:
     name: springcloud-config-server
@@ -12,6 +11,7 @@ spring:
       server:
         git:
           uri: git@github.com:Allen19940214/springcloud-config.git
+          force-pull: true
           search-paths:
             - springcloud-config
       label: master

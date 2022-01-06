@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class DeptController {
@@ -47,7 +48,6 @@ public class DeptController {
     @GetMapping("/findById/{id}")
     @HystrixCommand(fallbackMethod = "findByIdHystrix")//局部熔断 处理异常+超时
     public String findById(@PathVariable("id") Integer id) throws JsonProcessingException, InterruptedException {
-        //TimeUnit.MILLISECONDS.sleep(5000);
         ObjectMapper objectMapper = new ObjectMapper();
         String dept = objectMapper.writeValueAsString(deptService.findById(id));
         return dept;

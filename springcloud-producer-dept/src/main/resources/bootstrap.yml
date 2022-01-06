@@ -1,0 +1,27 @@
+server:
+  port: 8000
+spring:
+  application:
+    name: springcloud-producer-dept
+  cloud:
+    config:
+      label: master #分支
+      name: config  #配置文件前缀
+      profile: dev  #后缀
+      uri: http://localhost:3344 #配置中心服务地址
+
+#局部熔断机制配置 超时则执行fallbackMethod方法 生产者
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 4000 #配置具体方法的超时时间
+        timeout:
+          enabled: true # 必须设置true，否则会交给ribbon
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
