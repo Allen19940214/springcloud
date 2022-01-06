@@ -5,7 +5,18 @@ spring:
   application:
     name: springcloud-config-server
   cloud:
+    nacos:
+      discovery:
+        server-addr: 114.115.180.17:8848
     config:
       server:
         git:
-          uri: https://gitee.com/lwxa/springcloud-config.git
+          uri: git@github.com:Allen19940214/springcloud-config.git
+          search-paths:
+            - springcloud-config
+      label: master
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

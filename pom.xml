@@ -20,6 +20,7 @@
         <module>springcloud-producer-order</module>
         <module>springcloud-dispatchorder-service</module>
         <module>springcloud-alibaba-server</module>
+        <module>springcloud-geteway</module>
     </modules>
     <!--版本控制-->
     <properties>

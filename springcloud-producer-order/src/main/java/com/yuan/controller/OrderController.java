@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuan.pojo.Order;
 import com.yuan.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.Map;
 
 @RestController
 public class OrderController {
+    @Value("${server.port}")
+    private String port;
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -28,12 +31,12 @@ public class OrderController {
     @RequestMapping("/findAll")
     public String findAll() throws JsonProcessingException {
         List<Order> allOrder = orderService.findAll();
-        return objectMapper.writeValueAsString(allOrder);
+        return objectMapper.writeValueAsString("服务端口>>:"+port+allOrder);
     }
     @RequestMapping("/findById/{id}")
     public String findById(@PathVariable("id") String id) throws JsonProcessingException {
         Order byId = orderService.findById(id);
-        return objectMapper.writeValueAsString(byId);
+        return objectMapper.writeValueAsString(byId+"order服务>>"+port);
     }
     @RequestMapping("/updateById")
     public String updateById(@RequestBody Order order) {
