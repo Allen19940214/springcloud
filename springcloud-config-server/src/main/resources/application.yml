@@ -10,13 +10,22 @@ spring:
     config:
       server:
         git:
-          uri: git@github.com:Allen19940214/springcloud-config.git
+          uri: https://gitee.com/lwxa/springcloud-config.git
           force-pull: true
           search-paths:
             - springcloud-config
       label: master
+#消息总线rabbitmq服务
+  rabbitmq:
+    username: Allen
+    password: lwxa1421
+    virtual-host: /allen
+    host: 114.115.180.17
+    port: 5672
+
+#消息总线
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "bus-refresh"

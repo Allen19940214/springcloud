@@ -21,6 +21,7 @@
         <module>springcloud-dispatchorder-service</module>
         <module>springcloud-alibaba-server</module>
         <module>springcloud-geteway</module>
+        <module>springcloud-config-client</module>
     </modules>
     <!--版本控制-->
     <properties>
