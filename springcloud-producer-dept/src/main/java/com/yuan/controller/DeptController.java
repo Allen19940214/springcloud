@@ -10,10 +10,8 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RefreshScope//动态获取配置
