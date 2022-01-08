@@ -3,6 +3,7 @@ package com.yuan.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.yuan.aop.LogAnnotation;
 import com.yuan.pojo.Dept;
 import com.yuan.service.DeptService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class DeptController {
         }
         return instances.toString();
     }
+
     @GetMapping("/findAll")
     @HystrixCommand(fallbackMethod = "findAllHystrix")//局部熔断 处理异常+超时 熔断方法和原方法参数必须一致
     public String findAllDept() throws JsonProcessingException, InterruptedException {
@@ -43,7 +45,7 @@ public class DeptController {
     }
     //局部熔断方法
     public String findAllHystrix() {
-        return "访问超时，网络异常";
+        return "访问异常";
     }
     @GetMapping("/findById/{id}")
     @HystrixCommand(fallbackMethod = "findByIdHystrix")//局部熔断 处理异常+超时
