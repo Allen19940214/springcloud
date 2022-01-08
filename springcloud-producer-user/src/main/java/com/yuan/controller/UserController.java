@@ -112,4 +112,12 @@ public class UserController {
         String login = userService.login(map);
         return login;
     }
+    @RequestMapping ("/loginByToken")
+    public String loginByToken(@RequestParam("username")String username,@RequestParam("password")String password){
+        Map<String, Object> map = new HashMap<>();
+        map.put("username",username);
+        map.put("password",password);
+        String loginInfo = userService.loginByToken(map);
+        return loginInfo;
+    }
 }

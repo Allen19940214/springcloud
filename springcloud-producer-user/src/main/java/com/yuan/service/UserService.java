@@ -15,4 +15,5 @@ public interface UserService {
     int deleteById(@Param("uid")Integer id);
     String login(Map map);
     User findByUserName(String username);
+    String loginByToken(Map map);
 }

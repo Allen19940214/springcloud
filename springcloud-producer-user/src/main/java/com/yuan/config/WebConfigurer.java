@@ -13,10 +13,14 @@ import java.util.List;
 public class WebConfigurer implements WebMvcConfigurer {
     @Autowired
     private LoginInterceptor loginInterceptor;
+    @Autowired
+    private JWTLoginInterceptor jwtLoginInterceptor;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        InterceptorRegistration interceptor = registry.addInterceptor(loginInterceptor);
-        interceptor.addPathPatterns("/toUserPage");
+        //InterceptorRegistration interceptor = registry.addInterceptor(loginInterceptor);
+        InterceptorRegistration interceptorRegistration = registry.addInterceptor(jwtLoginInterceptor);
+        //interceptor.addPathPatterns("/toUserPage");
+        interceptorRegistration.addPathPatterns("/toUserPage");
         //设置不过滤的
        /* List<String> list = new ArrayList<String>();
         list.add("/toUserPage");
