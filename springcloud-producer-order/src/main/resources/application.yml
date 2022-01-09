@@ -11,6 +11,11 @@ mybatis:
 spring:
   application:
     name: springcloud-producer-order
+  #nacos配置
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 114.115.180.17:8848
 
   #rabbitmq服务
   rabbitmq:
@@ -52,15 +57,11 @@ spring:
     maxPoolPreparedStatementPerConnectionSize: 20
     useGlobalDataSourceStat: true
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:7000/eureka/
-  instance:
-    instance-id: springcloud-producer-order:${server.port} #更改备注 info完善Status链接中的信息
-info:
-  app.anme: 订单模块
-  author: jiangyuan
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 #局部熔断机制配置 超时则执行fallbackMethod方法 生产者
 hystrix:

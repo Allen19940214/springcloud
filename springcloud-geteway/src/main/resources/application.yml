@@ -1,0 +1,27 @@
+server:
+  port: 7001
+
+spring:
+  application:
+    name: springcloud-geteway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 114.115.180.17:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: true #动态路由
+      routes:
+        - id: producer-order
+          uri: lb://springcloud-producer-order
+          #接口规范 一个模块请求路径/user/find多级定义 在网关动态路由时便于配置
+          predicates:
+            - Path=/findAll/**
+  #gateway配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+

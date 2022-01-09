@@ -1,11 +1,31 @@
 server:
   port: 3344
-
 spring:
   application:
     name: springcloud-config-server
   cloud:
+    nacos:
+      discovery:
+        server-addr: 114.115.180.17:8848
     config:
       server:
         git:
           uri: https://gitee.com/lwxa/springcloud-config.git
+          force-pull: true
+          search-paths:
+            - springcloud-config
+      label: master
+#消息总线rabbitmq服务
+  rabbitmq:
+    username: Allen
+    password: lwxa1421
+    virtual-host: /allen
+    host: 114.115.180.17
+    port: 5672
+
+#消息总线
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "bus-refresh"

@@ -1,0 +1,24 @@
+server:
+  port: 8005
+spring:
+  application:
+    name: springcloud-config-client
+  cloud:
+    config:
+      label: master #分支
+      name: config  #配置文件前缀
+      profile: dev  #后缀
+      uri: http://localhost:3344 #配置中心服务地址
+  #rabbitmq服务
+  rabbitmq:
+    username: Allen
+    password: lwxa1421
+    virtual-host: /allen
+    host: 114.115.180.17
+    port: 5672
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
