@@ -1,20 +1,21 @@
 package com.yuan.aop;
 
 import com.yuan.dao.UserDao;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-
+@Component
 public class MyInvocationHandle implements InvocationHandler {
 
     //目标对象
 
-    Object tarObj;
+    private Object tarObj;
 
-    public MyInvocationHandle(Object tarObj) {
+    public void setTarObj(Object tarObj) {
         this.tarObj = tarObj;
     }
 
