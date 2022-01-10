@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +29,17 @@ public class TimingTaskService implements RabbitTemplate.ConfirmCallback,RabbitT
     @Autowired
     private OrderService orderService;
     @Autowired
-    //@Qualifier("rabbitTemplate1")
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private ObjectMapper objectMapper;
+    @PostConstruct
+    public void init(){
+        //将自定义接口实现类注入
+        rabbitTemplate.setConfirmCallback(this);
+        rabbitTemplate.setReturnCallback(this);
+    }
     //对本地消息冗余表中发送失败的消息 进行重新发送
-    @Scheduled(cron = "0/10 * * * * ? ")
+    @Scheduled(cron = "0/59 * * * * ? ")
     public void sendFailOrder() throws JsonProcessingException {
         log.info("定时任务：发送冗余表中投递失败的消息（状态为0的）");
         Map map = new HashMap<>();
@@ -89,7 +95,6 @@ public class TimingTaskService implements RabbitTemplate.ConfirmCallback,RabbitT
             }
         }
     }
-
     @Override
     public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
         //走到这里说明交换机路由到队列时肯定失败 可选择做一些操作 对退回的消息做标记
