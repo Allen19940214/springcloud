@@ -24,16 +24,16 @@ import java.util.Map;
 @Component
 @EnableScheduling//开启定时任务
 @Slf4j
-public class TimingTaskService{
+public class TimingTaskService implements RabbitTemplate.ConfirmCallback,RabbitTemplate.ReturnCallback{
     @Autowired
     private OrderService orderService;
     @Autowired
+    //@Qualifier("rabbitTemplate1")
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private ObjectMapper objectMapper;
-
     //对本地消息冗余表中发送失败的消息 进行重新发送
-    @Scheduled(cron = "0/40 * * * * ? ")
+    @Scheduled(cron = "0/10 * * * * ? ")
     public void sendFailOrder() throws JsonProcessingException {
         log.info("定时任务：发送冗余表中投递失败的消息（状态为0的）");
         Map map = new HashMap<>();
@@ -42,20 +42,20 @@ public class TimingTaskService{
         List<Order> orders = orderService.selectByCondition(map);
         if (orders.size() == 0) {
             log.info("暂无需要重新投递的消息");
-            return;
-        }
-        for (Order order : orders) {
-            CorrelationData correlationData = new CorrelationData();
-            String s = objectMapper.writeValueAsString(order);
-            byte[] bytesOrder = s.getBytes();
-            correlationData.setReturnedMessage(new Message(bytesOrder));
-            log.info("查询到失败消息为{}：", order);
-            rabbitTemplate.convertAndSend("ttlDirectExchange", "ttlsms", objectMapper.writeValueAsString(order), correlationData);
+        }else {
+            for (Order order : orders) {
+                CorrelationData correlationData = new CorrelationData();
+                String s = objectMapper.writeValueAsString(order);
+                byte[] bytesOrder = s.getBytes();
+                correlationData.setReturnedMessage(new Message(bytesOrder));
+                log.info("查询到失败消息为{}：", order);
+                rabbitTemplate.convertAndSend("ttlDirectExchange", "ttlsms", objectMapper.writeValueAsString(order), correlationData);
+            }
         }
         //遗留问题：消费者多个地方使用ack如何解决，比如在这个定时任务中
     }
 
-    /*@Override
+    @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
         if (!ack) {
             try {
@@ -95,5 +95,5 @@ public class TimingTaskService{
         //走到这里说明交换机路由到队列时肯定失败 可选择做一些操作 对退回的消息做标记
         log.error("定时任务消息{}，被交换机{}退回，退回原因为：{}，路由key：{}",
                 new String(message.getBody()),exchange,replyText,routingKey);
-    }*/
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -23,6 +24,7 @@ import java.util.Map;
 @Slf4j
 public class OrderServiceImpl implements OrderService ,RabbitTemplate.ConfirmCallback,RabbitTemplate.ReturnCallback{
     @Autowired
+    //@Qualifier("rabbitTemplate1")
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private OrderService orderService;
@@ -55,7 +57,7 @@ public class OrderServiceImpl implements OrderService ,RabbitTemplate.ConfirmCal
             String s = objectMapper.writeValueAsString(order);
             byte[] bytesOrder = s.getBytes();
             correlationData.setReturnedMessage(new Message(bytesOrder));
-            rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms",objectMapper.writeValueAsString(order),correlationData);
+            rabbitTemplate.convertAndSend("ttlDirectExchange11111","ttlsms",objectMapper.writeValueAsString(order),correlationData);
             return i;
         }
         return 0;

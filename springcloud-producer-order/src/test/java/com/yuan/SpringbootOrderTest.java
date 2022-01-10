@@ -14,12 +14,15 @@ import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +32,11 @@ public class SpringbootOrderTest {
     @Autowired
     private OrderService orderService;
     @Resource
+    //@Qualifier("rabbitTemplate1")
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    //@Qualifier("rabbitTemplate2")
+    private RabbitTemplate rabbitTemplate1;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -148,5 +155,12 @@ public class SpringbootOrderTest {
         ConfigurableApplicationContext Context = SpringApplication.run(SpringbootApplicationOrder.class);
         System.out.println(Context.getBean("rabbitTemplate"));
         System.out.println(Context.getBean("rabbitTemplate"));
+        //System.out.println(Context.getBean("rabbitTemplate2"));
+    }
+    @Test
+    public void test6661(){
+        Map map =new HashMap<>();
+        map.put("orderId", "49ec38d6c64");
+        System.out.println(orderService.selectByCondition(map));
     }
 }
