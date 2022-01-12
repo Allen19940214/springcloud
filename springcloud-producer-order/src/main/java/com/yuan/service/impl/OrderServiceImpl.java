@@ -3,6 +3,8 @@ package com.yuan.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.yuan.dao.OrderDao;
 import com.yuan.pojo.Order;
 import com.yuan.service.OrderService;
@@ -12,7 +14,6 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -40,9 +41,13 @@ public class OrderServiceImpl implements OrderService ,RabbitTemplate.ConfirmCal
     private OrderDao orderDao;
     @Autowired
     private ObjectMapper objectMapper;
+    //分页查询
     @Override
-    public List<Order> findAll() {
-        return orderDao.findAll();
+    public List<Order> findAll(Integer pageNum,Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Order> orderList = orderDao.findAll();
+        PageInfo<Order> orderPageInfo = new PageInfo<>(orderList);
+        return orderPageInfo.getList();
     }
     @Override
     public Order findById(String id) {

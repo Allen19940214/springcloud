@@ -13,7 +13,7 @@ public class WebConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration interceptorRegistration = registry.addInterceptor(jwtLoginInterceptor);
-        interceptorRegistration.addPathPatterns("/findAll");
+        interceptorRegistration.addPathPatterns("/findAll/{pageNum}/{pageSize}");
         //设置不过滤的
        /* List<String> list = new ArrayList<String>();
         list.add("/toUserPage");

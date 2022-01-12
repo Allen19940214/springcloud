@@ -16,7 +16,7 @@
     </resultMap>
 
     <select id="findAll" resultMap="OrderBase">
-        select * from torder;
+        select * from torder
     </select>
 
     <select id="findById" resultMap="OrderBase" parameterType="String">

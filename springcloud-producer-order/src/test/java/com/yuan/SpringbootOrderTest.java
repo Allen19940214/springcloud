@@ -14,7 +14,6 @@ import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -100,9 +99,17 @@ public class SpringbootOrderTest {
 
     @Test
     public void testSendCallback() throws JsonProcessingException {
-        for (int i = 0; i <10; i++) {
-            Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1,"方便面");
-            orderService.addOrder(order);
+        for (int i = 0; i < 3; i++) {
+            new Thread(()->{
+                for (int j = 0; j <1000; j++) {
+                    Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1,"方便面");
+                    try {
+                        orderService.addOrder(order);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
     }
     //优先级测试
@@ -162,5 +169,9 @@ public class SpringbootOrderTest {
         Map map =new HashMap<>();
         map.put("orderId", "49ec38d6c64");
         System.out.println(orderService.selectByCondition(map));
+    }
+    //分页查询
+    @Test
+    public void testPage(){
     }
 }

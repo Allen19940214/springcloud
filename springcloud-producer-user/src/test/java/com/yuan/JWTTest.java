@@ -19,7 +19,7 @@ import java.util.Map;
 //@RunWith(SpringRunner.class)
 public class JWTTest {
     //生成token 有头部 载体 签名组成
-    @Test
+   /* @Test
     public void testJWT(){
         //默认头部
         Calendar instance = Calendar.getInstance();
@@ -40,5 +40,5 @@ public class JWTTest {
         DecodedJWT verify = jwtVerifier.verify("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE2NDM5NzcsInVzZXJJZCI6MiwidXNlcm5hbWUiOiLlvKDkuIkifQ.UsIDaloha028wcQklIzmByFytRQTKJi1O8vNHlchWtk");
         System.out.println(verify.getClaim("userId").asInt());
         System.out.println(verify.getClaim("username").asString());
-    }
+    }*/
 }

@@ -3,7 +3,6 @@ package com.yuan.service.task;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.Channel;
 import com.yuan.pojo.Order;
 import com.yuan.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +10,9 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -41,14 +38,13 @@ public class TimingTaskService implements RabbitTemplate.ConfirmCallback,RabbitT
     //对本地消息冗余表中发送失败的消息 进行重新发送
     @Scheduled(cron = "0/59 * * * * ? ")
     public void sendFailOrder() throws JsonProcessingException {
-        log.info("定时任务：发送冗余表中投递失败的消息（状态为0的）");
         Map map = new HashMap<>();
         map.put("mqStatus", 0);
         //获得冗余订单集合 并重新投递
         List<Order> orders = orderService.selectByCondition(map);
         if (orders.size() == 0) {
-            log.info("暂无需要重新投递的消息");
         }else {
+            log.info("定时任务:重发采购单");
             for (Order order : orders) {
                 CorrelationData correlationData = new CorrelationData();
                 String s = objectMapper.writeValueAsString(order);
@@ -58,9 +54,7 @@ public class TimingTaskService implements RabbitTemplate.ConfirmCallback,RabbitT
                 rabbitTemplate.convertAndSend("ttlDirectExchange", "ttlsms", objectMapper.writeValueAsString(order), correlationData);
             }
         }
-        //遗留问题：消费者多个地方使用ack如何解决，比如在这个定时任务中
     }
-
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
         if (!ack) {

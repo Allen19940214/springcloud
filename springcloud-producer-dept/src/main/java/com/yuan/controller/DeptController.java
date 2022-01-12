@@ -13,7 +13,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 import java.util.Iterator;
 import java.util.List;
-
+@LogAnnotation(module = "部门模块",operator = "访问DeptController接口")
 @RestController
 @RefreshScope//动态获取配置
 public class DeptController {
@@ -22,15 +22,17 @@ public class DeptController {
     @Autowired
     private DiscoveryClient discoveryClient;
     @GetMapping("/getClientInfo")
-    public String getClientInfo() {
-        List<ServiceInstance> instances = discoveryClient.getInstances("springcloud-producer-dept");
-        Iterator<ServiceInstance> iterator = instances.iterator();
-        while (iterator.hasNext()){
-            System.out.println(iterator.next());
+    public List<ServiceInstance> getClientInfo() {
+        List<ServiceInstance>  serviceInstances = discoveryClient.getInstances("springcloud-producer-dept");
+        for(ServiceInstance serviceInstance:serviceInstances) {
+            System.out.println(serviceInstance.getServiceId() + "\t" +
+                    serviceInstance.getHost() + "\t" +
+                    serviceInstance.getPort() + "\t" +
+                    serviceInstance.getUri());
         }
-        return instances.toString();
+        return serviceInstances;
     }
-
+    @LogAnnotation
     @GetMapping("/findAll")
     @HystrixCommand(fallbackMethod = "findAllHystrix")//局部熔断 处理异常+超时 熔断方法和原方法参数必须一致
     public String findAllDept() throws JsonProcessingException, InterruptedException {

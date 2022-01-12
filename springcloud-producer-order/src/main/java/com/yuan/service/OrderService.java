@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface OrderService {
-    List<Order> findAll();
+    List<Order> findAll(Integer pageNum,Integer pageSize);
     Order findById(String id);
     int addOrder(Order order) throws JsonProcessingException;
     int updateById(Order order);

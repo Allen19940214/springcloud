@@ -28,9 +28,10 @@ public class OrderController {
         }
         return "下单失败";
     }
-    @RequestMapping("/findAll")
-    public String findAll() throws JsonProcessingException {
-        List<Order> allOrder = orderService.findAll();
+    //分页查询全部
+    @RequestMapping("/findAll/{pageNum}/{pageSize}")
+    public String findAll(@PathVariable("pageNum")Integer pageNum,@PathVariable("pageSize")Integer pageSize) throws JsonProcessingException {
+        List<Order> allOrder = orderService.findAll(pageNum,pageSize);
         return objectMapper.writeValueAsString("服务端口>>:"+port+allOrder);
     }
     @RequestMapping("/findById/{id}")
@@ -70,5 +71,4 @@ public class OrderController {
         String s = objectMapper.writeValueAsString(orders);
         return s;
     }
-
 }
