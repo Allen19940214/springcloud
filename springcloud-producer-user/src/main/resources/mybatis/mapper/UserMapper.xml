@@ -29,10 +29,10 @@
     <update id="updateById" parameterType="User">
         update user
         <set>
-            <if test="uname!=null">username=#{username},</if>
+            <if test="username!=null">username=#{username},</if>
             <if test="password!=null">password=#{password},</if>
             <if test="email!=null">email=#{email},</if>
-            <if test="age!=null">age=#{age},</if>
+            <if test="age!=null">age=#{age}</if>
         </set>
             where id=#{uid};
     </update>
@@ -48,5 +48,43 @@
     <select id="findByUserName" parameterType="string" resultMap="UserBase">
         select * from user where username=#{username};
     </select>
+    <!--姓氏查询-->
+    <select id="findByWord" parameterType="string" resultMap="UserBase">
+        select * from user
+        where
+            username like concat (#{word},'%')
+    </select>
+    <select id="findCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM user
+    </select>
+    <!--单条件查询-->
+    <select id="findCondition" resultMap="UserBase" parameterType="java.util.HashMap">
+        select * from user
+        where id=-1
+        <if test="uid !=null and uid !=''">
+            or id=#{uid}
+        </if>
+        <if test="username !=null and username !=''">
+            or username=#{username}
+        </if>
+        <if test="password !=null and password !=''">
+            or password=#{password}
+        </if>
+        <if test="email !=null and email !=''">
+            or email=#{email}
+        </if>
+        <if test="age !=null and age !=''">
+            or age=#{age}
+        </if>
+    </select>
+    <!--批量删除-->
+    <delete id="deleteByList" parameterType="java.util.List">
+        delete from user where id in
+        <if test="list!=null and list.size>0">
+            <foreach collection="list" open="(" close=")" separator="," item="idList">
+                #{idList}
+            </foreach>
+        </if>
+    </delete>
 </mapper>
 
