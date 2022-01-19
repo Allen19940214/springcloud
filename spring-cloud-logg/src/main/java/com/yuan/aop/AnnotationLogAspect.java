@@ -54,6 +54,6 @@ public class AnnotationLogAspect {
         log.info("URI:{}",requestURI);
         log.info("IP地址:{}",remoteAddr);
         log.info("=========================log end=============================");
-        log.info("耗时:{}",time);
+        log.info("耗时:{}ms",time);
     }
 }
