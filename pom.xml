@@ -23,6 +23,7 @@
         <module>springcloud-geteway</module>
         <module>springcloud-config-client</module>
         <module>spring-cloud-logg</module>
+        <module>springcloud-mybatis-plus</module>
     </modules>
     <!--版本控制-->
     <properties>
@@ -81,6 +82,11 @@
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis-spring-boot-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>3.4.2</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

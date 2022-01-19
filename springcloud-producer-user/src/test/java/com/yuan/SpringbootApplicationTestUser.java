@@ -38,7 +38,7 @@ public class SpringbootApplicationTestUser {
         //创建容器
         //AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext();
         DruidDataSource dataSource = (DruidDataSource)applicationContext.getBean("dataSource");
-        System.out.println(dataSource);
+        System.out.println(dataSource.getInitialSize());
     }
 
     @Test
