@@ -43,6 +43,7 @@ public class TimingTaskService implements RabbitTemplate.ConfirmCallback,RabbitT
         //获得冗余订单集合 并重新投递
         List<Order> orders = orderService.selectByCondition(map);
         if (orders.size() == 0) {
+            return;
         }else {
             log.info("定时任务:重发采购单");
             for (Order order : orders) {

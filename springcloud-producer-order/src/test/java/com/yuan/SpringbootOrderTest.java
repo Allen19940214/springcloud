@@ -167,11 +167,14 @@ public class SpringbootOrderTest {
     @Test
     public void test6661(){
         Map map =new HashMap<>();
-        map.put("orderId", "49ec38d6c64");
+        map.put("orderId", "6b2a9709422");
         System.out.println(orderService.selectByCondition(map));
     }
     //分页查询
     @Test
     public void testPage(){
+        Map map = new HashMap<>();
+        map.put("mqStatus", 0);
+        System.out.println(orderDao.selectByCondition(map));
     }
 }

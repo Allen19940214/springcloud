@@ -12,8 +12,8 @@ public class WebConfigurer implements WebMvcConfigurer {
     private JWTLoginInterceptor jwtLoginInterceptor;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        InterceptorRegistration interceptorRegistration = registry.addInterceptor(jwtLoginInterceptor);
-        interceptorRegistration.addPathPatterns("/findAll/{pageNum}/{pageSize}");
+        //InterceptorRegistration interceptorRegistration = registry.addInterceptor(jwtLoginInterceptor);
+        //interceptorRegistration.addPathPatterns("/findAll/{pageNum}/{pageSize}");
         //设置不过滤的
        /* List<String> list = new ArrayList<String>();
         list.add("/toUserPage");

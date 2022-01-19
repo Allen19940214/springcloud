@@ -12,8 +12,6 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName
-@Builder
 public class User implements Serializable {
     @TableId(value = "id",type = IdType.AUTO)
     private Integer uid;

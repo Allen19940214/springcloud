@@ -1,12 +1,12 @@
 server:
   port: 8002
   #mybatis配置
-mybatis:
-  type-aliases-package: com.yuan.pojo
-  mapper-locations: classpath:mybatis/mapper/*.xml
+mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     cache-enabled: true
+  type-aliases-package: com.yuan.pojo
+  mapper-locations: classpath:mybatis/mapper/*.xml
   #spring配置
 spring:
   application:
