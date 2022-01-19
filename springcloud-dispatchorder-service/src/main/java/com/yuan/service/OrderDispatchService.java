@@ -3,15 +3,12 @@ package com.yuan.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
-import com.yuan.pojo.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 
 @Service
@@ -56,6 +53,8 @@ public class OrderDispatchService {
     @RabbitListener(queues = "ttlSmsQueue")
     public void getOrder1(Message message, Channel channel) throws IOException {
         try {
+            String sOrder = new String(message.getBody());
+            log.info("正常消费:{}",sOrder);
             //幂等性问题解决，先拿到发送消息时设置的全局唯一id
             String orderMessageId = message.getMessageProperties().getMessageId();
             //从redis取出唯一id

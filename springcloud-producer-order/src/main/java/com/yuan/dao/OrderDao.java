@@ -16,7 +16,6 @@ public interface OrderDao {
     int addOrder(Order order);
     int updateById(Order order);
     int deleteById(@Param("orderId")String id);
-
     //冗余表语句
     int addOrderToBackup(Order order);
     int updateByIdBackup(Order order);

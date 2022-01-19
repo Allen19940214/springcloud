@@ -22,6 +22,8 @@
         <module>springcloud-alibaba-server</module>
         <module>springcloud-geteway</module>
         <module>springcloud-config-client</module>
+        <module>spring-cloud-logg</module>
+        <module>springcloud-mybatis-plus</module>
     </modules>
     <!--版本控制-->
     <properties>
@@ -82,6 +84,11 @@
                 <version>${mybatis-spring-boot-starter.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>3.4.2</version>
+            </dependency>
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
@@ -96,6 +103,11 @@
                 <groupId>com.auth0</groupId>
                 <artifactId>java-jwt</artifactId>
                 <version>3.18.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>1.3.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

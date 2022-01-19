@@ -1,12 +1,12 @@
 server:
   port: 8001
   #mybatis配置
-mybatis:
-  type-aliases-package: com.yuan.pojo
-  mapper-locations: classpath:mybatis/mapper/*.xml
+mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     cache-enabled: true
+  type-aliases-package: com.yuan.pojo
+  mapper-locations: classpath:mybatis/mapper/*.xml
   #spring配置
 spring:
   application:
@@ -39,6 +39,8 @@ spring:
     maxPoolPreparedStatementPerConnectionSize: 20
     useGlobalDataSourceStat: true
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+
+
 eureka:
   client:
     service-url:

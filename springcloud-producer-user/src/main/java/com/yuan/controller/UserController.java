@@ -3,6 +3,7 @@ package com.yuan.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.yuan.aop.MyInvocationHandle;
 import com.yuan.pojo.User;
 import com.yuan.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -23,16 +23,19 @@ public class JWTLoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //获取请求头中的令牌
+        Map<String, Object> map = new HashMap<>();
         Cookie[] cookies = request.getCookies();
-        if (cookies.length==0||cookies==null){
-            log.error("cookie不存在");
+        if (cookies==null||cookies.length==0){
+            map.put("msg","cookie不存在");
+            String json = new ObjectMapper().writeValueAsString(map);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().println(json);
             return false;
         }
         for (Cookie cookie : cookies) {
             if(cookie.getName().equals("token")){
                 String token = cookie.getValue();
                 log.info("当前token为：{}", token);
-                Map<String, Object> map = new HashMap<>();
                 try {
                     JWTUtil.verify(token);
                     log.info("token验证成功");

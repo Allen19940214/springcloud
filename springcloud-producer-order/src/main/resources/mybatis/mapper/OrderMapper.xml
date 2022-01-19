@@ -6,17 +6,16 @@
 <mapper namespace="com.yuan.dao.OrderDao">
     <cache/>
     <resultMap id="OrderBase" type="Order">
-        <id column="orderid" property="orderId"></id>
+        <id column="orderid" property="orderId"/>
         <result column="userid" property="userId"/>
         <result column="num" property="num"/>
-        <result column="total" property="total"/>
         <result column="total" property="total"/>
         <result column="mqstatus" property="mqStatus"/>
         <result column="goodname" property="goodName"/>
     </resultMap>
 
     <select id="findAll" resultMap="OrderBase">
-        select * from torder;
+        select * from torder
     </select>
 
     <select id="findById" resultMap="OrderBase" parameterType="String">
@@ -61,15 +60,8 @@
         where orderid=#{orderId};
     </update>
 
-    <select id="selectByCondition" parameterType="Map" resultMap="OrderBase">
-        select * from torderbackup
-        <where>
-            <if test="orderId!=null">orderid=#{orderId}</if>
-            <if test="userId!=null">userid=#{userId}</if>
-            <if test="num!=null">num=#{num}</if>
-            <if test="total!=null">total=#{total}</if>
-            <if test="mqStatus!=null">mqstatus=#{mqStatus}</if>
-        </where>
+    <select id="selectByCondition" parameterType="java.util.Map" resultMap="OrderBase">
+        select * from torderbackup where mqstatus=#{mqStatus}
     </select>
 </mapper>
 

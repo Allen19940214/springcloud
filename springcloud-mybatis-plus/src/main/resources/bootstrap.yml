@@ -1,0 +1,28 @@
+server:
+  port: 8004
+
+spring:
+  application:
+    name: springcloud-mybatis-plus
+  cloud:
+    config:
+      label: master #分支
+      name: config  #配置文件前缀
+      profile: dev  #后缀
+      uri: http://localhost:3344 #配置中心服务地址
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.yuan.pojo
+  mapper-locations: classpath:mybatis/mapper/*.xml
+#  global-config:
+#    db-config:
+#      logic-delete-field: deleted
+#      logic-delete-value: 1 #已删除
+#      logic-not-delete-value: 0 #未删除
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

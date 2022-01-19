@@ -2,28 +2,26 @@ package com.yuan;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.Channel;
 import com.yuan.dao.OrderDao;
 import com.yuan.pojo.Order;
 import com.yuan.service.OrderService;
 import com.yuan.utils.UUIDUtil;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessagePostProcessor;
-import org.springframework.amqp.rabbit.connection.Connection;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.nio.charset.StandardCharsets;
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -32,16 +30,18 @@ import java.util.concurrent.TimeUnit;
 public class SpringbootOrderTest {
     @Autowired
     private OrderService orderService;
-    @Autowired
+    @Resource
+    //@Qualifier("rabbitTemplate1")
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    //@Qualifier("rabbitTemplate2")
+    private RabbitTemplate rabbitTemplate1;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     OrderDao orderDao;
-    @Autowired
-    RedisTemplate redisTemplate;
-    @Autowired
-    StringRedisTemplate stringRedisTemplate;
+
+
     @Test
     public void testFanoutExchange() throws JsonProcessingException {
         //模拟用户下单
@@ -88,15 +88,28 @@ public class SpringbootOrderTest {
         //测试本地冗余表 插入and更新
         /*Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1);
         orderDao.addOrderToBackup(order);*/
-        Order order = new Order("cacd2607ec5", 2, 1, 10.0, 0,"方便面");
-        orderDao.updateByIdBackup(order);
+        Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 0,"方便面");
+        System.out.println(orderService.addOrderToBackup(order));
+    }
+    @Test
+    public void testBackupTable1() throws JsonProcessingException {
+        Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 0,"方便面");
+        System.out.println(orderService.addOrder(order));
     }
 
     @Test
     public void testSendCallback() throws JsonProcessingException {
-        for (int i = 0; i <=20; i++) {
-            Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1,"方便面");
-            orderService.addOrder(order);
+        for (int i = 0; i < 3; i++) {
+            new Thread(()->{
+                for (int j = 0; j <1000; j++) {
+                    Order order = new Order(UUIDUtil.getUUID(), 2, 1, 10.0, 1,"方便面");
+                    try {
+                        orderService.addOrder(order);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
     }
     //优先级测试
@@ -143,5 +156,25 @@ public class SpringbootOrderTest {
         byte[] bytesOrder  = sorder.getBytes();
         correlationData.setReturnedMessage(new Message(bytesOrder));
         rabbitTemplate.convertAndSend("ttlDirectExchange","ttlsms",objectMapper.writeValueAsString(order),messagePostProcessor,correlationData);
+    }
+    @Test
+    public void test666(){
+        ConfigurableApplicationContext Context = SpringApplication.run(SpringbootApplicationOrder.class);
+        System.out.println(Context.getBean("rabbitTemplate"));
+        System.out.println(Context.getBean("rabbitTemplate"));
+        //System.out.println(Context.getBean("rabbitTemplate2"));
+    }
+    @Test
+    public void test6661(){
+        Map map =new HashMap<>();
+        map.put("orderId", "6b2a9709422");
+        System.out.println(orderService.selectByCondition(map));
+    }
+    //分页查询
+    @Test
+    public void testPage(){
+        Map map = new HashMap<>();
+        map.put("mqStatus", 0);
+        System.out.println(orderDao.selectByCondition(map));
     }
 }

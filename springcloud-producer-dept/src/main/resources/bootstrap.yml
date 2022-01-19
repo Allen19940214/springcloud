@@ -10,6 +10,13 @@ spring:
       profile: dev  #后缀
       uri: http://localhost:3344 #配置中心服务地址
 
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: true
+  type-aliases-package: com.yuan.pojo
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
 #局部熔断机制配置 超时则执行fallbackMethod方法 生产者
 hystrix:
   command:

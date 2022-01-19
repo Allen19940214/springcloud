@@ -15,9 +15,12 @@ import java.lang.reflect.Proxy;
 public class AopTest {
     @Autowired
     UserDao userDao;
+    @Autowired
+    MyInvocationHandle myInvocationHandle;
+
     @Test
     public void testAop(){
-        MyInvocationHandle myInvocationHandle = new MyInvocationHandle(userDao);
+        myInvocationHandle.setTarObj(userDao);
         //生成代理类
         Object proxyInstance = Proxy.newProxyInstance(userDao.getClass().getClassLoader(), userDao.getClass().getInterfaces(),myInvocationHandle);
         UserDao proxyInstance1 = (UserDao) proxyInstance;
