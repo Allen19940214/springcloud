@@ -8,6 +8,7 @@ config 未完成
 dashborad监控+Hystrix（熔断+降级）通过
 zuul 通过
 集成rabbitmq建立交换机和队列 生产消费模型初步验证通过
+mytest
 测试
 
 
