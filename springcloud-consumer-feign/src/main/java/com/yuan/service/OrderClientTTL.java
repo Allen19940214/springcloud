@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class OrderClientTTL {
     //监听延时队列
-    /*@RabbitListener(queues = "ttlSmsQueue")
+    @RabbitListener(queues = "ttlSmsQueue")
     public void dispatch2(String order){
         log.info("消费者接收到订单信息并准备派单:>>{}",order);
-    }*/
+    }
 }

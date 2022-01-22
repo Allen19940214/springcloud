@@ -1,0 +1,40 @@
+server:
+  port: 81
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: true
+  type-aliases-package: com.yuan.pojo
+  mapper-locations: classpath:mybatis/mapper/*.xml
+spring:
+  application:
+    name: springcloud-consumer-feign
+  cloud:
+    config:
+      label: master #分支
+      name: config  #配置文件前缀
+      profile: dev  #后缀
+      uri: http://localhost:3344 #配置中心服务地址
+  #rabbitmq服务
+  rabbitmq:
+    username: Allen
+    password: lwxa1421
+    virtual-host: /allen
+    host: 114.115.180.17
+    port: 5672
+
+    #设置客户端访问超时 模拟远程调用触发熔断机制时需要配置
+ribbon:
+  ReadTimeout: 6000
+  ConnectTimeout: 6000
+
+  #客户端开启降级
+feign:
+  hystrix:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

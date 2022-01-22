@@ -1,0 +1,48 @@
+server:
+  port: 83
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: true
+  type-aliases-package: com.yuan.pojo
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+spring:
+  application:
+    name: springcloud-order-seata
+  cloud:
+    config:
+      label: master #分支
+      name: config  #配置文件前缀
+      profile: dev  #后缀
+      uri: http://localhost:3344 #配置中心服务地址
+
+seata:
+  tx-service-group: guangzhou
+  service:
+    vgroup-mapping:
+      guangzhou: default
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 114.115.180.17:8848
+      application: seata-server
+      username: "nacos"
+      password: "nacos"
+      group: "SEATA_GROUP"
+      namespace: "751d10ab-bf33-40be-9c9d-1c38cc89aa97"
+  config:
+    nacos:
+      server-addr: 114.115.180.17:8848
+      username: "nacos"
+      password: "nacos"
+      group: "SEATA_GROUP"
+      namespace: "751d10ab-bf33-40be-9c9d-1c38cc89aa97"
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
